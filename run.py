@@ -11,10 +11,10 @@ import pandas as pd
 def perf_cmd(bench_path):
   PERF_CMD = "/usr/bin/perf stat "
 
-  EVENTS = ("-e branches,branch-misses,instructions,cpu-cycles ")
-#           "L1-dcache-load-misses,L1-dcache-load,L1-icache-load-misses," +
-#           "dTLB-load-misses,LLC-load-misses,'syscalls:sys_enter_*'," +
-#           "'block:*',minor-faults,power/energy-pkg/,power/energy-ram/ ")
+  EVENTS = ("-e ref-cycles,branches,branch-misses,instructions,cpu-cycles," +
+           "L1-dcache-load-misses,L1-dcache-load,L1-icache-load-misses," +
+           "dTLB-load-misses,LLC-load-misses,'syscalls:sys_enter_*'," +
+           "'block:*',minor-faults,power/energy-pkg/,power/energy-ram/ ")
 
   OPTIONS = "-a --per-core -x, "
 
@@ -51,6 +51,7 @@ def measure_bench(bench_path):
   print "Measuring " + bench_path
   bench_df = pd.DataFrame()
   for runx in xrange(10):
+    print "Iteration: " + str(runx)
     run_df = run(bench_path)
     run_df['Run'] = runx
     run_df.set_index('Run', append=True, inplace=True)

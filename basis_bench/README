@@ -1,0 +1,91 @@
+== Basis Benchmark Suite ==
+The basis benchmark suite is intended to provide "basis vectors" for performance. Each benchmark excercises one measurable feature (like branch prediction or IPC) while leaving the others "normal". This gives a benchmark suite with known behavior for experimenting with evaluation tools.
+
+== Usage ==
+Build a benchmark simply as "make NAME" where NAME is simply the file name without the .c at the end. The executable may be run directly, each outputs "done" when done and should take no more than 1 minute each.
+
+I.E.
+$ make branch
+$ ./branch
+Done
+$
+
+== branch ==
+"Normal": A normal program would be expected to have single-digit branch misses
+          ~(1 <= misses <= 10)
+
+branch_max.c
+Causes a maximal number of branch misses by branching on the output of a random
+number generator. Should miss around 30% of branches (it turns out to be very
+difficult to beat the branch predictor).
+
+branch_min.c
+Tries to minimize branch mispredictions. Effectively 0% miss (there is a small
+number from startup). Note, this is the same code as ipc_1.c.
+
+== IPC ==
+IPC is the number of instructions per cycle.
+In terms of raw counters it is "instructions" / "cpu-cycles".
+"Normal": We take ~1 IPC to be normal ~(.8 - 1.2)
+
+=== ipc_max.c ===
+Tries to maximize the IPC. The amount depends on the machine but on a newish
+intel server chip it should be almost 4 (3.99 in my test).
+
+=== ipc_min.c ===
+Tries to minimize the IPC. It does this by issuing AVX double-precision square
+root in a tight loop. It gets around .06 IPC on the test machine. I might be
+able to get lower but this may be considered an outlier.
+
+Note: IPC is minimized without the use of memory instructions. This is because
+IPC may be lowered dramatically by lots of cache misses or I/O which isn't
+really the thing being tested.
+
+=== ipc_1.c ===
+A benchmark that gets very close to 1 IPC. You can think of this as a very
+typical program.
+
+=== ipc_st.c ===
+This benchmark gets poor IPC with loads and stores (but no misses).
+
+== cache ==
+cache refers to the l1-dcache. We are specifically measuring misses.
+Relevant Counters: "L1-dcache-load" "L1-dcache-misses"
+"Normal": For simplicity, these benchmarks assume very few cache misses is
+"normal". Most benchmarks have few loads so the %miss might be ~5%. This is a
+hard metric to force to be "normal" so expect some variation. In real-life,
+a non-trivial number of cache misses would be normal.
+
+=== cache.c ===
+This causes a large number of cache misses by touching every cache-line in
+a page in random order. It gets about 40-50% misses on the reference machine.
+
+== TLB ==
+The TLB is the hardware responsible for virtual memory management. It is usually
+relevent to performance when touching many pages.
+Relevant Counters: "dTLB-loads" "dTLB-load-misses"
+-- Note: "dTLB-loads" is inclusive with "l1-dcache-loads" (it is a superset).
+"Normal": We consider very few misses to be "normal"
+
+=== tlb.c ===
+Stresses out the TLB without causing too many l1-d$ misses. Touches every page
+in a 4-GB buffer in random order but touches every byte in 1 cache-line from
+each. The miss rate can be misleading because tlb stats include l1-dcache stats.
+
+== Sys ==
+Measures system call activity. This is how many times the application asked the
+operating system to do something on it's behalf.
+
+Relevant Counters: "syscalls:sys_enter_*"
+Normal: In this suite, "normal" means very few (nearly 0). In real life it is
+more varied but probably small.
+
+=== sys.c ===
+Causes a high number of syscalls (in this case "getpid").
+
+== Null ==
+This is a baseline that does nothing.
+
+=== null ===
+Simply sleeps for 20 seconds.
+

@@ -10,7 +10,6 @@ int main(int argc, char *argv[]) {
   volatile int res = 0;
   while(count < ITERATIONS) {
     asm (
-       "add $1, %0\n"
         "add $1, %0\n"
         "add $1, %0\n"
         "add $1, %0\n"

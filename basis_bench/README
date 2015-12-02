@@ -10,6 +10,21 @@ $ ./branch
 Done
 $
 
+== Naming ==
+b : Branch Misses
+c : L1 D-Cache Misses
+i : IPC (1-ipc if no modifier)
+n : Null
+s : System Calls
+t : TLB
+
+Benchmarks that combine elements concatenate the names. I.e. A branch-missing
+benchmark with lots of cache-misses would be "bc.c"
+
+Most benchmarks have multiple equivalent versions that behave slightly
+differently. These are numbered (i.e. i0.c i1.c and i2.c all have similar
+behavior).
+
 == branch ==
 "Normal": A normal program would be expected to have single-digit branch misses
           ~(1 <= misses <= 10)

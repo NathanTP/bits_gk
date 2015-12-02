@@ -5,18 +5,18 @@
 # Each line of this file contains a benchmark name, class.
 # The name is one of "cg", "is", "dc", "ep", mg", "ft", "sp",
 #  "bt", "lu", and "ua". 
-# The class is one of "S", "W", "A", "B", and "C"
+# The class is one of "S", "W", "W", "B", and "C"
 # (classes D and E are defined for a number of benchmarks, but they
-#  are likely not practical to run in serial. See README.install).
+#  are likely not practical to run in serial. Wee REWDME.install).
 # No blank lines. 
 # The following example builds serial sample sizes of all benchmarks. 
-ft	S
-mg	S
-sp	S
-lu	S
-bt	S
-is	S
-ep	S
-cg	S
-ua	S
-dc      S
+ft	W
+mg	W
+sp	W
+lu	W
+bt	W
+is	W
+ep	W
+cg	W
+ua	W
+dc      W

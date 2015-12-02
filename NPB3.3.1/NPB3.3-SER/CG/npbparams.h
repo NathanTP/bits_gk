@@ -1,4 +1,4 @@
-c CLASS = S
+c CLASS = W
 c  
 c  
 c  This file is generated automatically by the setparams utility.
@@ -7,15 +7,15 @@ c  in this directory. Do not modify it by hand.
 c  
         integer            na, nonzer, niter
         double precision   shift, rcond
-        parameter(  na=1400,
-     >              nonzer=7,
+        parameter(  na=7000,
+     >              nonzer=8,
      >              niter=15,
-     >              shift=10.,
+     >              shift=12.,
      >              rcond=1.0d-1 )
         logical  convertdouble
         parameter (convertdouble = .false.)
         character compiletime*11
-        parameter (compiletime='30 Oct 2015')
+        parameter (compiletime='30 Nov 2015')
         character npbversion*5
         parameter (npbversion='3.3.1')
         character cs1*3

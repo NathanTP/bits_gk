@@ -3,17 +3,20 @@
  */
 #include <stdint.h>
 #include <sys/syscall.h>
+#include <linux/random.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-#define ITERATIONS (1024*1024*24)
+#define ITERATIONS (1024*1024*2)
 
 int main(int argc, char *argv[]) {
-  volatile pid_t pid;
+  uint8_t buf[64];
+  volatile uint8_t volt;
 
   for(int64_t i = 0; i < ITERATIONS; i++) {
-    pid = syscall(SYS_getpid);
+    syscall(SYS_getrandom, &buf, 64, 0);
+    volt = buf[1];
   }
 
   printf("Done\n");

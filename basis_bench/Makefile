@@ -5,22 +5,26 @@ CFLAGS=-I$(IDIR) -O3
 ODIR=obj
 LDIR =
 
+SRCDIR=./src
+
 BINDIR=./bin
 LIBS=
 
-#==============================================================================
-# Helper Functions
-#==============================================================================
-objify = $(patsubst %,$(ODIR)/%,$(1))
-depify = $(patsubst %,$(IDIR)/%,$(1))
+SUITE_SRC := $(wildcard $(SRCDIR)/*.c)
+
+SUITE_BIN := $(patsubst $(SRCDIR)/%.c,$(BINDIR)/%, $(SUITE_SRC))
 
 #==============================================================================
 # Targets
 #==============================================================================
-$(ODIR)/%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+$(BINDIR)/%: $(SRCDIR)/%.c
+	$(CC) -o $@ $< $(CFLAGS)
+
+suite : $(SUITE_BIN)
+
+print-%  : ; @echo $* = $($*)
 
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o
+	rm -f $(ODIR)/*.o $(BINDIR)/*

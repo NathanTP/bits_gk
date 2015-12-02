@@ -1,4 +1,4 @@
-c CLASS = S
+c CLASS = W
 c  
 c  
 c  This file is generated automatically by the setparams utility.
@@ -6,19 +6,19 @@ c  It sets the number of processors and the class of the NPB
 c  in this directory. Do not modify it by hand.
 c  
         integer nx_default, ny_default, nz_default
-        parameter (nx_default=32, ny_default=32, nz_default=32)
+        parameter (nx_default=128, ny_default=128, nz_default=128)
         integer nit_default, lm, lt_default
-        parameter (nit_default=4, lm = 5, lt_default=5)
+        parameter (nit_default=4, lm = 7, lt_default=7)
         integer debug_default
         parameter (debug_default=0)
         integer ndim1, ndim2, ndim3
-        parameter (ndim1 = 5, ndim2 = 5, ndim3 = 5)
+        parameter (ndim1 = 7, ndim2 = 7, ndim3 = 7)
         integer one, nv, nr, ir
         parameter (one=1)
         logical  convertdouble
         parameter (convertdouble = .false.)
         character compiletime*11
-        parameter (compiletime='30 Oct 2015')
+        parameter (compiletime='30 Nov 2015')
         character npbversion*5
         parameter (npbversion='3.3.1')
         character cs1*3

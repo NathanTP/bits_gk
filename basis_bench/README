@@ -101,6 +101,3 @@ Causes a high number of syscalls (in this case "getpid").
 == Null ==
 This is a baseline that does nothing.
 
-=== null ===
-Simply sleeps for 20 seconds.
-

@@ -3,7 +3,9 @@
 import sys
 import pandas as pd
 import numpy as np
+import sklearn as sk
 import pick
+import explain
 
 def main():
   path = sys.argv[1]
@@ -20,8 +22,15 @@ def main():
 
   # Numpy matrix representing the suite
   suite = suite_df.as_matrix()
+  sk.preprocessing.scale(suite, copy=False)
 
-  assn = pick.pick_kmeans(suite, 5)
+  print suite_df
+  exit()  
+  assn = pick.pick_kmeans(suite, 3)
+  sub_suite = suite[assn]
   print suite_df.index[assn]
+  
+  print "Dimensionality Score: " + str(explain.dim_score(sub_suite))
+  print "Distance Score: " + str(explain.dist_score(sub_suite))
 
 main()

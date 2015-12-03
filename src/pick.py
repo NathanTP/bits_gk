@@ -20,3 +20,7 @@ def pick_kmeans(dat, k):
 # Return a random selection (just for verification purposes)
 def pick_rand(dat, k):
   return np.array(random.sample(range(dat.shape[0]), k))
+
+def pick_new(dat, k):
+  pass
+ 

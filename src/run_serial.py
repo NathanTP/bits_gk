@@ -14,8 +14,7 @@ def perf_cmd(bench_path):
 
   EVENTS = ("-e ref-cycles,branches,branch-misses,instructions,cpu-cycles,"
     "L1-dcache-load-misses,L1-dcache-load,L1-icache-load-misses," +
-          "dTLB-load-misses,LLC-load-misses,'syscalls:sys_enter_*'," +
-          "'block:*' ")
+          "dTLB-load-misses,dTLB-loads,LLC-load-misses,'syscalls:sys_enter_*',")
 
   OPTIONS = " -x, "
 

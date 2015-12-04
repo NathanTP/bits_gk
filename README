@@ -1,0 +1,48 @@
+BITS Gatekeeper
+
+A tool for selecting an optimal subset of benchmarks to include in a suite.
+
+== Features ==
+ref-cycles - These are constant-speed cycles (at 100Mhz) and can be used as to
+             measure real-time spent by the application.
+
+branches - These are the number of branching instructions issued (think if/else)
+
+branch-misses - The number of times the CPU mis-predicted which way a branch
+                would go.
+
+instructions - The number of instructions (basic steps) issued.
+
+cpu-cycles - The true number of cycles spent. This can change based on
+             temperature or other reasons out of our control.
+
+L1-dcache-load-misses - The number of times a piece of data was not in the first
+                        level of cache.
+
+L1-dcache-load - The number of data words fetched from the L1
+
+L1-icache-load-misses - The number of instructions missed in the L1
+
+dTLB-load-misses - Number of times a page was not in the TLB.
+
+dTLB-loads - Number of times the TLB was referenced (inclusive with L1-dcache).
+
+LLC-load-misses - Misses in the last level cache (data and instructions).
+
+syscalls:sys_enter* - Number of times each system call was issued
+
+== Derived Features ==
+These stats are combinations of the above of particular interest. They are not
+explictly stated in the data but might be interesting to extract.
+
+IPC - Instructions / Cycle ('instructions' / 'cpu-cycles'). A common metric used
+      to evaluate CPUs. Range from 0-4 on the test machine (1 is typical).
+
+Miss-Rate - %cache misses ('L1-dcache-load' / 'L1-dcache-load-misses'). Probably
+            more informative than raw miss count (since different programs issue
+            different numbers of loads.
+
+XdTLB_hit = Exclusive TLB hits. Basically removing the affect of the L1.
+            (dTLB-loads - dTLB_load_misses) - (L1_dcache_load - L1_dcache_load_misses)
+
+XdTLB-Miss-Rate - Exclusive TLB miss rate. ('dTLB-load-misses' / 'xdTLB_hit')

@@ -1,14 +1,19 @@
 == Basis Benchmark Suite ==
-The basis benchmark suite is intended to provide "basis vectors" for performance. Each benchmark excercises one measurable feature (like branch prediction or IPC) while leaving the others "normal". This gives a benchmark suite with known behavior for experimenting with evaluation tools.
+The basis benchmark suite is intended to provide "basis vectors" for
+performance. Each benchmark excercises one measurable feature (like branch
+prediction or IPC) while leaving the others "normal". This gives a benchmark
+suite with known behavior for experimenting with evaluation tools.
 
 == Usage ==
-Build a benchmark simply as "make NAME" where NAME is simply the file name without the .c at the end. The executable may be run directly, each outputs "done" when done and should take no more than 1 minute each.
+Build a benchmark simply as "make NAME" where NAME is simply the file name
+without the .c at the end or "make suite" to make them all. The executable may
+be run directly, each outputs "done" when done and should take no more than
+1 minute each.
 
 I.E.
 $ make branch
 $ ./branch
 Done
-$
 
 == Naming ==
 b : Branch Misses
@@ -25,29 +30,61 @@ Most benchmarks have multiple equivalent versions that behave slightly
 differently. These are numbered (i.e. i0.c i1.c and i2.c all have similar
 behavior).
 
+== Utilies (util.h) ==
+The benchmarks use a few random number generators. The generators in util.h
+have a 64-bit range.
+
+lfsr:
+Linear feedback shift register. Pretty good PRNG uses ~10 ALU instructions, all
+shifts/bitwise ops.
+
+lcg:
+Linear Congruential Generator. Even simpler than lfsr, just a multiply and an
+add.
+
+Note: The system "rand()" function actually skrews up the measrurements a bit
+because it has a good number of loads/stores and branch misses. It is generally
+avoided.
+
 == branch ==
+This is focused on the branch predictor in the CPU. In terms of raw counters
+it mostly uses "branch-misses" but really it's about "branch-misses / branches".
+
 "Normal": A normal program would be expected to have single-digit branch misses
-          ~(1 <= misses <= 10)
+          ~(1 <= misses <= 10). This should be ~0% miss rate.
 
-branch_max.c
-Causes a maximal number of branch misses by branching on the output of a random
-number generator. Should miss around 30% of branches (it turns out to be very
-difficult to beat the branch predictor).
+b0.c
+ping-pong between code sections based on a random branch. Uses lfsr with equal
+probability.
 
-branch_min.c
+b1.c
+Same as b0 but uses lcg.
+
+b2.c
+Same as b0 but uses a 16-bit lfsr directly inlined.
+
+b_min.c
 Tries to minimize branch mispredictions. Effectively 0% miss (there is a small
-number from startup). Note, this is the same code as ipc_1.c.
+number from startup). Note, this is the same code as i0_1.c.
 
 == IPC ==
 IPC is the number of instructions per cycle.
 In terms of raw counters it is "instructions" / "cpu-cycles".
 "Normal": We take ~1 IPC to be normal ~(.8 - 1.2)
 
-=== ipc_max.c ===
+i0.c
 Tries to maximize the IPC. The amount depends on the machine but on a newish
-intel server chip it should be almost 4 (3.99 in my test).
+intel server chip it should be almost 4 (3.99 in my test). Uses a manually
+unrolled loop of assembly with lots of load/store and ALU overlap.
 
-=== ipc_min.c ===
+i1.c
+Same as i0 but with loop less unrolled (slightly worse ipc, still ~4).
+
+i2.c
+Same as i0 but unrolled more and uses more stores and should have a few
+cache misses (not too many).
+
+i_min.c
 Tries to minimize the IPC. It does this by issuing AVX double-precision square
 root in a tight loop. It gets around .06 IPC on the test machine. I might be
 able to get lower but this may be considered an outlier.
@@ -56,11 +93,11 @@ Note: IPC is minimized without the use of memory instructions. This is because
 IPC may be lowered dramatically by lots of cache misses or I/O which isn't
 really the thing being tested.
 
-=== ipc_1.c ===
+i*_1.c
 A benchmark that gets very close to 1 IPC. You can think of this as a very
 typical program.
 
-=== ipc_st.c ===
+i_st.c
 This benchmark gets poor IPC with loads and stores (but no misses).
 
 == cache ==
@@ -71,13 +108,23 @@ Relevant Counters: "L1-dcache-load" "L1-dcache-misses"
 hard metric to force to be "normal" so expect some variation. In real-life,
 a non-trivial number of cache misses would be normal.
 
-=== cache.c ===
+c0.c
 This causes a large number of cache misses by touching every cache-line in
 a page in random order. It gets about 40-50% misses on the reference machine.
+It uses a statically defined psuedo-random sequence of misses. It touches pages
+in predictable order (minimizing TLB misses).
+
+c1.c
+Same as c0 but usese lfsr instead of a static sequence. Uses a constant seed
+so its really still a static sequence (but with more instructions).
+
+c2.c
+Similar to c0 but uses lcg with a slightly skewed branch. This will have a few
+more branches and branch misses (but still relatively few).
 
 == TLB ==
 The TLB is the hardware responsible for virtual memory management. It is usually
-relevent to performance when touching many pages.
+relevent to performance when touching many pages (lots of memory).
 Relevant Counters: "dTLB-loads" "dTLB-load-misses"
 -- Note: "dTLB-loads" is inclusive with "l1-dcache-loads" (it is a superset).
 "Normal": We consider very few misses to be "normal"
@@ -87,6 +134,14 @@ Stresses out the TLB without causing too many l1-d$ misses. Touches every page
 in a 4-GB buffer in random order but touches every byte in 1 cache-line from
 each. The miss rate can be misleading because tlb stats include l1-dcache stats.
 
+t0.c
+Very similar to c0.c but touches pages in random order and cache lines in
+sequential order.
+
+t1.c
+Similar to t0 but uses system rand() (doesn't seem to skrew up the metrics too
+badly here).
+
 == Sys ==
 Measures system call activity. This is how many times the application asked the
 operating system to do something on it's behalf.
@@ -95,9 +150,36 @@ Relevant Counters: "syscalls:sys_enter_*"
 Normal: In this suite, "normal" means very few (nearly 0). In real life it is
 more varied but probably small.
 
-=== sys.c ===
-Causes a high number of syscalls (in this case "getpid").
+s0.c
+Calls "SYS_getpid". Padded with the loop from i0.c until it gets ~1 ipc to
+appear normal. Otherwise the time spent waiting for system calls would cause
+very poor ipc.
+
+s1.c
+Same as s0 but uses SYS_clock_gettime.
+
+s2.c
+Calls SYS_getrandom which is a bit more work for the OS to do. Also fills in
+a buffer (so more loads/stores). No IPC padding.
 
 == Null ==
 This is a baseline that does nothing.
 
+== Combos ==
+These benchmarks attempt to combine two of the above benchmarks.
+
+ib0.c
+Takes b0 and adds a high-ipc asm block before each branch. Lots of branch misses
+but high-ipc. It's particularly important here to measure the branch miss rate
+more than the absolute value because there are relatively few branches so the
+total miss # is misleading.
+
+is0.c
+Same as s1.c but padds the IPC even more to get ~3.9 IPC.
+
+sb0.c
+Like ib0.c but calls SYS_getpid between branches.
+
+tc0.c
+Combination of c0 and t0. Touch pages and random order and touch cache lines in
+random order.

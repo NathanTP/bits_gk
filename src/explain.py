@@ -20,4 +20,4 @@ def dist_score(suite):
     mean = suite.mean(axis=0)
     diff = np.linalg.norm(mean - suite, axis=1)
     diff = np.square(diff)
-    return diff.sum()
+    return diff.sum() / suite.shape[0]

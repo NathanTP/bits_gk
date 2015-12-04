@@ -24,8 +24,6 @@ def main():
   suite = suite_df.as_matrix()
   sk.preprocessing.scale(suite, copy=False)
 
-  print suite_df
-  exit()  
   assn = pick.pick_kmeans(suite, 3)
   sub_suite = suite[assn]
   print suite_df.index[assn]

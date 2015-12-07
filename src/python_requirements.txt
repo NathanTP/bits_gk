@@ -1,1 +1,1 @@
-numpy pandas tables sklearn scipy
+numpy pandas tables sklearn scipy pygal

@@ -21,6 +21,4 @@ def pick_kmeans(dat, k):
 def pick_rand(dat, k):
   return np.array(random.sample(range(dat.shape[0]), k))
 
-def pick_new(dat, k):
-  pass
  

@@ -8,27 +8,29 @@ import pick
 import explain
 
 def main():
-  path = sys.argv[1]
-  df = pd.read_hdf(path)
+    path = sys.argv[1]
+    df = pd.read_hdf(path)
 
-  # Transform the suite to be the mean/std of all runs per-app
-  means = df.mean(level='App')
-  stds = df.std(level='App')
-  stds.rename(columns=lambda x:  x+"_std", inplace=True)
-  
-  suite_df = pd.concat([means, stds], axis=1)
+    # Transform the suite to be the mean/std of all runs per-app
+    suite = df.mean(level='App')
+    
+    # Ignore standard deviations for now (for simplicity)
+#     stds = df.std(level='App')
+#     stds.rename(columns=lambda x:  x+"_std", inplace=True)
+#     suite = pd.concat([means, stds], axis=1)
 
-  print suite_df.index
+    print "Candidate Benchmarks: " + str(list(suite.index))
 
-  # Numpy matrix representing the suite
-  suite = suite_df.as_matrix()
-  sk.preprocessing.scale(suite, copy=False)
+    # Normalize Data
+    suite = (suite - suite.mean()) / (suite.max() - suite.min())
 
-  assn = pick.pick_kmeans(suite, 3)
-  sub_suite = suite[assn]
-  print suite_df.index[assn]
-  
-  print "Dimensionality Score: " + str(explain.dim_score(sub_suite))
-  print "Distance Score: " + str(explain.dist_score(sub_suite))
+    assn = pick.pick_kmeans(suite.as_matrix(), 5)
+    sub_suite = suite.iloc[assn]
+
+    print "Selected Subset: " + str(list(sub_suite.index))
+
+    print "Dimensionality Score: " + str(explain.score_dim(sub_suite))
+    print "Distance Score: " + str(explain.score_dist(sub_suite))
+    explain.plot_coverage(sub_suite)
 
 main()

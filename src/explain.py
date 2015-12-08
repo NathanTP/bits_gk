@@ -4,6 +4,7 @@
 import numpy as np
 import sklearn as sk
 import sklearn.decomposition
+import sklearn.mixture
 import pygal as pg
 
 # Score a suite based on its dimensionality (bigger better)
@@ -32,18 +33,28 @@ def score_area(suite):
     # polyhedron with suite points and the origin as the vertices and then
     # measure its volume
     pass
-    
+
+# Score based on the information criterion of a gaussian mixture model
+def score_unlik(sub_suite, full_suite):
+    model = sk.mixture.DPGMM(n_components=len(sub_suite), covariance_type='full')
+    model.fit(sub_suite)
+    return (model.score(full_suite)).sum()
+
+def score_ic(sub_suite, full_suite):
+    model = sk.mixture.DPGMM(n_components=len(sub_suite), covariance_type='full')
+    model.fit(sub_suite)
+    return model.aic(full_suite)
 
 def plot_coverage(suite):
 
     # Column labels, first half are means, second are standard deviations
     clbl = list(suite)
     tot = suite.max()
-
+    
     # Plot Means
-    print "Plotting means to suite_coverage_means.svg"
+    print "Plotting means to suite_coverage.svg"
     plot = pg.Radar(fill=True)
-    plot.title = "Suite Coverage (Feature Means)"
+    plot.title = "Suite Coverage"
     plot.x_labels = clbl
     for bench in suite.iterrows():
         plot.add(bench[0], list(bench[1]))

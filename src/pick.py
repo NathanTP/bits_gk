@@ -77,8 +77,14 @@ def _dim_dist_scorer(df, param):
 def _unlik_scorer(sub, full):
     return explain.score_unlik(sub, full)
 
+def _unlik_loo_scorer(sub, full):
+    return explain.score_unlik_loo(sub, full)
+
 def _ic_scorer(sub, full):
     return explain.score_ic(sub, full)
+
+def _ic_loo_scorer(sub, full):
+    return explain.score_ic_loo(sub, full)
 
 # Brute-force searches for best subset of data according to
 # dimension and distance
@@ -103,6 +109,15 @@ def pick_unlik_exh(dat, k):
 
 def pick_unlik_greedy(dat, k): 
     return _test_greedy(dat, k, _unlik_scorer, dat)
+
+def pick_unlik_loo_exh(dat, k):
+    return _test_exhaustive(dat, k, _unlik_loo_scorer, dat)
+
+def pick_unlik_loo_greedy(dat, k):
+    return _test_greedy(dat, k, _unlik_loo_scorer, dat)
+
+def pick_ic_loo_greedy(dat, k):
+    return _test_greedy(dat, k, _ic_loo_scorer, dat)
 
 def pick_ic_exh(dat, k):
     return _test_exhaustive(dat, k, _ic_scorer, dat)

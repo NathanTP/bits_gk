@@ -7,6 +7,7 @@ import sklearn.decomposition
 import sklearn.mixture
 import scipy.stats
 import pygal as pg
+import pygal.style
 
 # Score a suite based on its dimensionality (bigger better)
 def score_dim(suite):
@@ -74,13 +75,13 @@ def score_ic_loo(sub, full):
     return unlik / len(sub)
 
 # Score based on the information criterion of a gaussian mixture model
-def score_unlik(sub_suite, full_suite):
+def score_unlik_rep(sub_suite, full_suite):
     model = sk.mixture.DPGMM(n_components=len(sub_suite), covariance_type='full')
     model.fit(sub_suite)
     # We want to maximize the negative log-liklihood
     return (model.score(full_suite)).sum()
 
-def score_ic(sub_suite, full_suite):
+def score_ic_rep(sub_suite, full_suite):
     model = sk.mixture.DPGMM(n_components=len(sub_suite), covariance_type='full')
     model.fit(sub_suite)
     # Return the negative because we would like our subset to model the full
@@ -89,17 +90,24 @@ def score_ic(sub_suite, full_suite):
 
 def plot_coverage(suite, name):
     # Column labels, first half are means, second are standard deviations
-    clbl = list(suite)
-    tot = suite.max()
+#     clbl = list(suite)
+    clbl = ['L', 'S', 'I', 'B', 'C', 'T']
+#     tot = suite.max()
     
+    cust_style = pg.style.Style(value_font_size=1, label_font_size=30, legend_font_size=30)
+
     # Plot Means
-    plot = pg.Radar(fill=True)
-    plot.title = name + " Coverage"
+    plot = pg.Radar(fill=True, style=cust_style, legend_at_bottom=True,
+                    legend_at_bottom_columns=3, legend_box_size=10,
+                    margin_bottom=60, margin_left=0, margin_right=10)
+#     plot = pg.Radar(fill=True)
+#     plot.title = name + " Coverage"
     plot.x_labels = clbl
     for bench in suite.iterrows():
         plot.add(bench[0], list(bench[1]))
         
 #     plot.add("Total", list(tot))
-    fname = name + "_coverage.svg"
+    fname = name + "_coverage.png"
     print "Plotting coverage to " + fname
-    plot.render_to_file(fname)
+    plot.render_to_png(fname)
+#     plot.render_to_file(fname)

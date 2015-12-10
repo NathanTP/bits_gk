@@ -75,20 +75,20 @@ def _dim_dist_scorer(df, param):
     return explain.score_dist(df)*param[0] + explain.score_dim(df)*param[1]
 
 def _unlik_scorer(sub, full):
-    return explain.score_unlik(sub, full)
+    return explain.score_unlik_rep(sub, full)
 
 def _unlik_loo_scorer(sub, full):
     return explain.score_unlik_loo(sub, full)
 
 def _ic_scorer(sub, full):
-    return explain.score_ic(sub, full)
+    return explain.score_ic_rep(sub, full)
 
 def _ic_loo_scorer(sub, full):
     return explain.score_ic_loo(sub, full)
 
 # Brute-force searches for best subset of data according to
 # dimension and distance
-def pick_dim_dist_exh(dat, k):
+def pick_dd_exh(dat, k):
     # Weight given to distance vs dimensionality (must sum to 1.0)
     wdist = 0.1
     wdim = 0.9
@@ -97,30 +97,30 @@ def pick_dim_dist_exh(dat, k):
 
 # Greedy searches for best subset of data according to
 # dimension and distance
-def pick_dim_dist_greedy(dat, k):
+def pick_dd_gre(dat, k):
     # Weight given to distance vs dimensionality (must sum to 1.0)
     wdist = 0.1
     wdim = 0.9
  
     return _test_greedy(dat, k, _dim_dist_scorer, [wdist, wdim])
 
-def pick_unlik_exh(dat, k):
+def pick_unlik_rep_exh(dat, k):
     return _test_exhaustive(dat, k, _unlik_scorer, dat)
 
-def pick_unlik_greedy(dat, k): 
+def pick_unlik_rep_gre(dat, k): 
     return _test_greedy(dat, k, _unlik_scorer, dat)
 
 def pick_unlik_loo_exh(dat, k):
     return _test_exhaustive(dat, k, _unlik_loo_scorer, dat)
 
-def pick_unlik_loo_greedy(dat, k):
+def pick_unlik_loo_gre(dat, k):
     return _test_greedy(dat, k, _unlik_loo_scorer, dat)
 
-def pick_ic_loo_greedy(dat, k):
+def pick_ic_loo_gre(dat, k):
     return _test_greedy(dat, k, _ic_loo_scorer, dat)
 
-def pick_ic_exh(dat, k):
+def pick_ic_rep_exh(dat, k):
     return _test_exhaustive(dat, k, _ic_scorer, dat)
 
-def pick_ic_greedy(dat, k):
+def pick_ic_rep_gre(dat, k):
     return _test_greedy(dat, k, _ic_scorer, dat)

@@ -2,6 +2,23 @@ BITS Gatekeeper
 
 A tool for selecting an optimal subset of benchmarks to include in a suite.
 
+== Quick-Start Guide ==
+1. Create a directory and fill it with executables that represent N candidate
+   benchmarks. Each executable should run with no arguments.
+2. Run: ./run_serial.py /PATH/TO/BENCHMARK_DIR/
+3. Run: ./gk.py /PATH/TO/results.h5
+
+In reality, gk.py is meant to be a more interactive script, you probably want
+to modify it to your needs. Right now it's set to run a full battery of tests
+that may take some time and almost certainly produce more info than you want.
+
+== Algorithms ==
+The file pick.py has a number of algorithms to pick the best K benchmarks.
+
+== Analysis ==
+explain.py has some methods for ranking and visualizing results. analysis.py
+is a less well-engineered script to help with visualization of raw results.
+
 == Features ==
 ref-cycles - These are constant-speed cycles (at 100Mhz) and can be used as to
              measure real-time spent by the application.
@@ -46,3 +63,4 @@ XdTLB_hit = Exclusive TLB hits. Basically removing the affect of the L1.
             (dTLB-loads - dTLB_load_misses) - (L1_dcache_load - L1_dcache_load_misses)
 
 XdTLB-Miss-Rate - Exclusive TLB miss rate. ('dTLB-load-misses' / 'xdTLB_hit')
+
